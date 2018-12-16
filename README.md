@@ -60,7 +60,7 @@ Edax is one of the strongest othello programs in the world, written by [abulmo](
 Paweł Liskowski wrote a paper called [Learning to Play Othello with Deep Neural
 Networks](https://arxiv.org/pdf/1711.06583.pdf). He trained several CNN architectures to challenge Edax. This is a good reference on how powerful Edax is.
 
-Edax is not a part of this project. You need go [HERE](https://github.com/2Bear/edax-reversi), click **Clone or download** button, dow![]()nload the source and build it. Don't download release version 4.4. It dosen't work.
+Edax is not a part of this project. You need go [HERE](https://github.com/2Bear/edax-reversi), click **Clone or download** button, download the source and build it. Don't download release version 4.4. It dosen't work.
 
 ```
 cd edax/project/path
