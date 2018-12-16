@@ -1,0 +1,9 @@
+data/
+model/
+checkpoint/
+__pycache__/
+.vscode/
+.ipynb_checkpoints/
+
+edax/
+*.csv
