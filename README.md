@@ -21,7 +21,6 @@ I also referred some great posts:
 * python 3.5 64-bit
 * tensorflow or tensorflow-gpu 1.11
 
-
 ## Usage
 
 You can use `-h` option for more help.
@@ -155,7 +154,7 @@ Just type your move, such as F4, and press `Enter`.
 
 ## Data
 
-On the [releases page]() you can download:
+On the [releases page](https://github.com/2Bear/othello-zero/releases) you can download:
 
 * All key checkpoints, such as V1, V10, V20 and so on.
 
@@ -176,3 +175,6 @@ On the [releases page]() you can download:
 | Model that generates new games | The best | The latest | The latest |
 | The replacement of old games for training | Smooth | Smooth | Complete |
 
+---
+**<center>Presented by doBell. We are so proud of this.</center>**
+**<center>来自 doBell 团队，我们为此倍感荣光。</center>**
