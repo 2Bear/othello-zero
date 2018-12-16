@@ -176,5 +176,6 @@ On the [releases page](https://github.com/2Bear/othello-zero/releases) you can d
 | The replacement of old games for training | Smooth | Smooth | Complete |
 
 ---
-**<center>Presented by doBell. We are so proud of this.</center>**
-**<center>来自 doBell 团队，我们为此倍感荣光。</center>**
+
+**Presented by doBell. We are so proud of this.**</br>
+**来自 doBell 团队，我们为此倍感荣光。**
