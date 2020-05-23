@@ -162,6 +162,18 @@ On the [releases page](https://github.com/2Bear/othello-zero/releases) you can d
 
 <img src="doc/img/plot.png">
 
+## checkpoint File
+
+The **checkpoint** file is just a bookmark file. You can create it manually.
+
+Create a new text file named **checkpoint**. Edit it. Here is a example, just one line:
+```
+model_checkpoint_path: "v117-14797350"
+```
+You can replace `v117-14797350` with any checkpoint name such as `v001-49150`.
+
+In this way, you can choose different checkpoints to restore, and compare them.
+
 ## Comparison
 
 |  | AlphaGo Zero | AlphaZero | othello-zero |

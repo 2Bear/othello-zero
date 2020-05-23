@@ -12,7 +12,9 @@ class Edax:
     def set_level(self, level):
         self.write_stdin("l " + str(level))
         self.read_stdout()
-    
+        self.write_stdin("b randomness")
+        self.read_stdout()
+
     def make_move(self, move):
         if move == config.pass_move:
             self.write_stdin("pass")
