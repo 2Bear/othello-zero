@@ -6,7 +6,7 @@ import traceback
 from multiprocessing import Pool, Process
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import api
 import board
@@ -182,98 +182,6 @@ class Train:
             self.global_step = int(checkpoint_name.split('-')[-1])
 
 
-class EdaxGame:
-    def __init__(self, level):
-        self.edax = api.Edax()
-        self.edax.set_level(level)
-        self.moves_num = 0
-        self.mcts_batch = None
-        self.current_node = tree.Node(tree.FakeNode(), 0, config.black, board.Board())
-        self.current_node.is_game_root = True
-        self.current_node.is_search_root = True
-
-    def start(self):
-        with tf.Session() as session:
-            saver = tf.train.Saver()
-            restore_from_last_checkpoint(session, saver)
-            nn = net.NN(session)
-            self.mcts_batch = tree.MCTS_Batch(nn)
-            self.moves_num = 0
-            while True:
-                gc.collect()
-                self.moves_num += 1
-                # zero is thinking
-                pi = self.mcts_batch.alpha([self.current_node], get_temperature(self.moves_num))[0]
-                zero_move = pick_move_greedily(pi)
-                self.make_move(zero_move)
-                if self.current_node.is_terminal:
-                    break
-                # edax is thinking
-                self.mcts_batch.alpha([self.current_node], get_temperature(self.moves_num))[0]
-                edax_move = self.edax.make_move(self.current_node.move)
-                self.make_move(edax_move)
-                if self.current_node.is_terminal:
-                    break
-            # who is the winner
-            print_winner(self.current_node)
-
-    def make_move(self, move):
-        self.current_node = make_move(self.current_node, move)
-        gui.print_node(self.current_node)
-
-
-class HumanGame:
-    def __init__(self):
-        self.moves_num = 0
-        self.mcts_batch = None
-        self.current_node = tree.Node(tree.FakeNode(), 0, config.black, board.Board())
-        self.current_node.is_game_root = True
-        self.current_node.is_search_root = True
-
-    def start(self):
-        with tf.Session() as session:
-            saver = tf.train.Saver()
-            restore_from_last_checkpoint(session, saver)
-            nn = net.NN(session)
-            self.mcts_batch = tree.MCTS_Batch(nn)
-            self.moves_num = 0
-            while True:
-                gc.collect()
-                self.moves_num += 1
-                # zero is thinking
-                pi = self.mcts_batch.alpha([self.current_node], get_temperature(self.moves_num))[0]
-                zero_move = pick_move_greedily(pi)
-                self.make_move(zero_move)
-                if self.current_node.is_terminal:
-                    break
-                # human is thinking
-                self.mcts_batch.alpha([self.current_node], get_temperature(self.moves_num))[0]
-                human_move = self.get_human_input()
-                self.make_move(human_move)
-                if self.current_node.is_terminal:
-                    break
-            # who is the winner
-            print_winner(self.current_node)
-    
-    def get_human_input(self):
-        human_input = -1
-        while True:
-            human_input_str = input(">")
-            if human_input_str == "pass":
-                human_input = config.pass_move
-            else:
-                human_input = plane_2_line(human_input_str)
-            
-            if human_input is None or self.current_node.legal_moves[human_input] == 0:
-                print("illegal.")
-            else:
-                return human_input
-
-    def make_move(self, move):
-        self.current_node = make_move(self.current_node, move)
-        gui.print_node(self.current_node)
-
-
 def pick_move_probabilistically(pi):
     r = random.random()
     s = 0
@@ -295,7 +203,13 @@ def get_temperature(moves_num):
         return 0.95 ** (moves_num - 6)
 
 
+def validate(move):
+    if not (isinstance(move, int) or isinstance(move, np.int64)) or not (0 <= move < config.N ** 2 or move == config.pass_move):
+        raise ValueError("move must be integer from [0, 63] or {}, got {}".format(config.pass_move, move))
+
+
 def make_move(node, move):
+    validate(move)
     if move not in node.child_nodes:
         node = tree.Node(node, move, -node.player)
     else:
@@ -369,15 +283,52 @@ def learning_loop(self_play_wokers_num=config.self_play_wokers_num, echo_max=con
         process.join()
 
 
+def play_game(player):
+    moves_num = 0
+    mcts_batch = None
+    current_node = tree.Node(tree.FakeNode(), 0, config.black, board.Board())
+    current_node.is_game_root = True
+    current_node.is_search_root = True
+
+    def make_move_with_gui(current_node, move):
+        current_node = make_move(current_node, move)
+        gui.print_node(current_node)
+        return current_node
+
+    with tf.Session() as session:
+        saver = tf.train.Saver()
+        restore_from_last_checkpoint(session, saver)
+        nn = net.NN(session)
+        mcts_batch = tree.MCTS_Batch(nn)
+        moves_num = 0
+        while True:
+            gc.collect()
+            moves_num += 1
+
+            # zero is thinking
+            pi = mcts_batch.alpha([current_node], get_temperature(moves_num))[0]
+            zero_move = pick_move_greedily(pi)
+            current_node = make_move_with_gui(current_node, zero_move)
+            if current_node.is_terminal:
+                break
+
+            # player is thinking
+            mcts_batch.alpha([current_node], get_temperature(moves_num))[0]
+            player_move = player.make_move(current_node)
+            print("player move: {}".format(player_move))
+            current_node = make_move_with_gui(current_node, player_move)
+            if current_node.is_terminal:
+                break
+        # who is the winner
+        print_winner(current_node)
+
+
 def play_with_edax(edax_level=config.edax_level):
-    edaxGame = EdaxGame(edax_level)
-    edaxGame.start()
-    edaxGame.edax.close()
+    play_game(api.EdaxPlayer(edax_level))
 
 
 def play_with_human():
-    human_game = HumanGame()
-    human_game.start()
+    play_game(api.HumanPlayer())
 
 
 parser = argparse.ArgumentParser()
