@@ -61,11 +61,11 @@ def print_node(node):
     player = ""
     opponent = ""
     if node.player == config.black:
-        player = "●black"
-        opponent = "○white"
+        player = black_sign + " black"
+        opponent = white_sign + " white"
     else:
-        player = "○white"
-        opponent = "●black"
+        player = white_sign + " white"
+        opponent = black_sign + " black"
 
     print("")
 

@@ -1,7 +1,9 @@
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 import config
+
+tf.disable_eager_execution()
 
 class NN:
     def __init__(self, session):

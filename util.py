@@ -7,7 +7,7 @@ def log(*messages):
 
 
 def plane_2_line(plane):
-    if (plane[0].isalpha() and plane[1].isdigit()) is not True:
+    if not plane or not (plane[0].isalpha() and plane[1].isdigit()):
         return None
     
     plane = plane.upper()
