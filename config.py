@@ -31,12 +31,6 @@ train_echo_max = 100
 train_checkpoint_max_to_keep = 1
 learning_loop_echo_max = 3
 
-# edax config
-edax_level = 1
-edax_path = "./edax/Edax"
-edax_eval_path = "./edax/data/eval.dat"
-edax_book_path = "./edax/data/book.dat"
-
 # path config
 checkpoint_path = "./checkpoint/"
 data_path = "./data/"

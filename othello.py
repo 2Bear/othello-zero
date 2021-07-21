@@ -323,24 +323,17 @@ def play_game(player):
         print_winner(current_node)
 
 
-def play_with_edax(edax_level=config.edax_level):
-    play_game(api.EdaxPlayer(edax_level))
-
-
 def play_with_human():
     play_game(api.HumanPlayer())
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--learning-loop", help='start a learning loop from the latest model, or a new random model if there is no any model', action="store_true")
-parser.add_argument("-e", "--play-with-edax", help='play with edax, and print every move. but you need compile edax and copy it to right path first', action="store_true")
-parser.add_argument("-m", "--play-with-human", help='play with you on the command line', action="store_true")
+parser.add_argument("-l", "--learn", help='start a learning loop from the latest model, or a new random model if there is no any model', action="store_true")
+parser.add_argument("-p", "--play", help='play with you on the command line', action="store_true")
 args = parser.parse_args()
-if args.learning_loop:
+if args.learn:
     learning_loop()
-elif args.play_with_edax:
-    play_with_edax()
-elif args.play_with_human:
+elif args.play:
     play_with_human()
 else:
     learning_loop()
